@@ -1,0 +1,70 @@
+/*
+Generated code DO NOT MODIFY
+Source: {{source}}
+*/
+
+package {{packageName}}
+
+import com.amazonaws.services.dynamodbv2.datamodeling.*
+import com.fasterxml.jackson.annotation.*
+import java.util.*
+
+{{#message}}
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@DynamoDBDocument
+class {{documentName}} (
+    {{#fields}}
+        {{#isConverterRequired}}
+    @DynamoDBTypeConvertedJson
+        {{/isConverterRequired}}
+    @DynamoDBAttribute
+    var {{name}}: {{{getType}}}? = {{{getDefaultValue}}},
+    {{/fields}}
+) {
+    data class Builder(
+    {{#fields}}
+        var {{name}}: {{{getType}}}? = {{{getDefaultValue}}},
+    {{/fields}}
+    ) {
+    {{#fields}}
+        fun {{name}}(v: {{{getType}}}) = apply { this.{{name}} = v }
+    {{/fields}}
+        fun build() = {{documentName}}(
+        {{#fields}}
+            {{name}} = this.{{name}},
+        {{/fields}}
+        )
+    }
+
+    companion object {
+        fun Parse(json: String): {{documentName}} {
+            return ProtoUtils.getMapper().readValue(json, {{documentName}}::class.java)
+        }
+
+        fun newBuilder(): {{documentName}}.Builder {
+            return {{documentName}}.Builder()
+        }
+    }
+
+    fun toJson(): String {
+        return ProtoUtils.getMapper().writeValueAsString(this)
+    }
+
+    fun toPB(): {{pName}} {
+        return ProtoUtils.toPB(
+            {{pName}}.newBuilder(), this.toJson()) as {{pName}}
+    }
+}
+
+//Add extension to message
+fun {{pName}}.toJson(): String {
+    return ProtoUtils.toJson(this)
+}
+
+fun {{pName}}.toEntity(): {{documentName}} {
+    return ProtoUtils.getMapper()
+        .readValue(this.toJson().toByteArray(), {{documentName}}::class.java)
+}
+{{/message}}
+

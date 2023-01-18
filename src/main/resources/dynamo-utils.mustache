@@ -1,0 +1,37 @@
+/*
+Generated code DO NOT MODIFY
+*/
+
+package {{packageName}};
+
+import com.google.protobuf.Message
+import com.google.protobuf.util.JsonFormat
+import java.io.IOException
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+
+/**
+* @created {{{createdOn}}}
+* @author {{{author}}}
+**/
+
+object ProtoUtils {
+    private val mapper: ObjectMapper = ObjectMapper()
+        .registerModule(KotlinModule.Builder().build())
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+
+    fun getMapper() = mapper
+
+    @Throws(IOException::class)
+    fun toJson(pb: Message?): String {
+        return JsonFormat.printer().print(pb)
+    }
+
+    @Throws(IOException::class)
+    fun toPB(targetBuilder: Message.Builder, json: String?): Message {
+        JsonFormat.parser().merge(json, targetBuilder)
+            return targetBuilder.build()
+    }
+}
